@@ -35,15 +35,57 @@
     --winner-color: #7b1fa2;
     --ue-color: #455a64;
 
+    /* Court-specific (defaults to Hard) */
+    --court-grad-1: #1a3c5e;
+    --court-grad-2: #2a6496;
+    --court-accent: #3498db;
+    --court-surface: rgba(52, 152, 219, 0.08);
+
     --radius: 12px;
     --radius-sm: 8px;
-    --shadow: 0 2px 8px rgba(0,0,0,0.1);
-    --shadow-lg: 0 4px 20px rgba(0,0,0,0.15);
+    --shadow: 0 2px 8px rgba(0,0,0,0.12);
+    --shadow-lg: 0 4px 20px rgba(0,0,0,0.18);
 
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-left: env(safe-area-inset-left, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
+}
+
+/* === Court Themes === */
+#match-screen[data-court="Hard"] {
+    --court-grad-1: #0c2d48;
+    --court-grad-2: #1a5276;
+    --court-accent: #2e86c1;
+    --court-surface: rgba(46, 134, 193, 0.06);
+}
+
+#match-screen[data-court="Clay"] {
+    --court-grad-1: #6e2c00;
+    --court-grad-2: #a04000;
+    --court-accent: #d35400;
+    --court-surface: rgba(211, 84, 0, 0.06);
+}
+
+#match-screen[data-court="Grass"] {
+    --court-grad-1: #0b3d1e;
+    --court-grad-2: #1e6b3e;
+    --court-accent: #27ae60;
+    --court-surface: rgba(39, 174, 96, 0.06);
+}
+
+#match-screen[data-court="Carpet"] {
+    --court-grad-1: #2c003e;
+    --court-grad-2: #512e5f;
+    --court-accent: #8e44ad;
+    --court-surface: rgba(142, 68, 173, 0.06);
+}
+
+#match-screen[data-court="Indoor"] {
+    --court-grad-1: #1c2833;
+    --court-grad-2: #2c3e50;
+    --court-accent: #5d6d7e;
+    --court-surface: rgba(93, 109, 126, 0.06);
 }
 
 /* === Reset === */
@@ -106,6 +148,10 @@ input, select {
 /* ============================================
    SETUP SCREEN
    ============================================ */
+#setup-screen {
+    background: linear-gradient(160deg, #e8f5e9 0%, #f1f8e9 40%, #fffde7 100%);
+}
+
 .setup-container {
     flex: 1;
     max-width: 520px;
@@ -271,12 +317,15 @@ input, select {
 }
 
 /* ============================================
-   MATCH SCREEN
+   MATCH SCREEN - Base
    ============================================ */
 #match-screen {
-    background: var(--bg);
     gap: 0;
     padding: 0;
+    /* Court-themed gradient background */
+    background:
+        radial-gradient(ellipse at 50% 120%, var(--court-accent) 0%, transparent 60%),
+        linear-gradient(180deg, var(--court-grad-1) 0%, var(--court-grad-2) 35%, #e8edf2 35.5%);
 }
 
 #match-screen.active {
@@ -291,10 +340,11 @@ input, select {
     justify-content: space-between;
     padding: 6px 12px;
     padding-top: calc(6px + var(--safe-top));
-    background: var(--sb-bg);
+    background: var(--court-grad-1);
     color: var(--sb-text);
     font-size: 13px;
     min-height: 36px;
+    gap: 8px;
 }
 
 .match-info {
@@ -302,6 +352,9 @@ input, select {
     align-items: center;
     gap: 0;
     opacity: 0.9;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .match-timer {
@@ -309,6 +362,29 @@ input, select {
     font-weight: 600;
     font-size: 14px;
     opacity: 0.9;
+    flex-shrink: 0;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.btn-undo {
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.9);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+
+.btn-undo:active {
+    background: rgba(255,255,255,0.3);
 }
 
 .btn-icon {
@@ -325,15 +401,15 @@ input, select {
 
 /* Scoreboard */
 .scoreboard {
-    background: var(--sb-bg);
-    padding: 4px 12px 10px;
+    background: var(--court-grad-1);
+    padding: 2px 12px 8px;
     flex-shrink: 0;
 }
 
 .scoreboard table {
-    width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
+    table-layout: auto;
+    margin: 0 auto;
 }
 
 .scoreboard th {
@@ -341,13 +417,13 @@ input, select {
     font-weight: 600;
     color: rgba(255,255,255,0.5);
     text-transform: uppercase;
-    padding: 2px 4px;
+    padding: 2px 8px;
     text-align: center;
 }
 
 .scoreboard th:first-child {
     text-align: left;
-    width: 40%;
+    padding-left: 4px;
 }
 
 .scoreboard th.game-col {
@@ -355,7 +431,7 @@ input, select {
 }
 
 .scoreboard td {
-    padding: 6px 4px;
+    padding: 5px 8px;
     text-align: center;
     color: var(--sb-text);
     font-size: 18px;
@@ -370,10 +446,13 @@ input, select {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: 140px;
+    padding-left: 4px;
 }
 
 .scoreboard td.set-score {
-    font-size: 20px;
+    font-size: 19px;
+    min-width: 28px;
 }
 
 .scoreboard td.set-score.set-won {
@@ -381,21 +460,22 @@ input, select {
 }
 
 .scoreboard td.game-score {
-    font-size: 24px;
+    font-size: 22px;
     color: var(--sb-score);
-    min-width: 50px;
+    min-width: 40px;
+    padding-left: 12px;
 }
 
 .scoreboard .serve-dot {
     color: var(--sb-serve);
     font-size: 10px;
-    margin-left: 4px;
+    margin-right: 4px;
 }
 
 .scoreboard .player-name-cell {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
 }
 
 .scoreboard .tiebreak-score {
@@ -404,51 +484,26 @@ input, select {
     vertical-align: super;
 }
 
-/* Point Type Bar */
-.point-type-bar {
-    display: flex;
-    gap: 6px;
-    padding: 8px 12px;
-    background: var(--card-bg);
-    border-bottom: 1px solid var(--border);
-    justify-content: center;
+/* Status Banner (between scoreboard and cards) — always reserves height */
+.match-status-banner {
     flex-shrink: 0;
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: #ffffff;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.point-type-btn {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 700;
-    background: #f5f5f5;
-    color: #666;
-    border: 2px solid transparent;
-    transition: all 0.15s;
-    min-width: 52px;
-}
-
-.point-type-btn.active[data-type="ace"] {
-    background: #fff3e0;
-    color: var(--ace-color);
-    border-color: var(--ace-color);
-}
-
-.point-type-btn.active[data-type="doubleFault"] {
-    background: #ffebee;
-    color: var(--df-color);
-    border-color: var(--df-color);
-}
-
-.point-type-btn.active[data-type="winner"] {
-    background: #f3e5f5;
-    color: var(--winner-color);
-    border-color: var(--winner-color);
-}
-
-.point-type-btn.active[data-type="unforcedError"] {
-    background: #eceff1;
-    color: var(--ue-color);
-    border-color: var(--ue-color);
+.match-status-banner.hidden {
+    visibility: hidden;
+    display: flex !important;
 }
 
 /* Scoring Area */
@@ -458,100 +513,110 @@ input, select {
     gap: 10px;
     padding: 10px 12px;
     min-height: 0;
+    background: var(--court-surface);
+    padding-bottom: calc(10px + var(--safe-bottom));
+    overflow-y: auto;
 }
 
-.score-btn {
+/* Player Cards */
+.player-card {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border-radius: var(--radius);
-    font-size: 18px;
-    transition: transform 0.1s, box-shadow 0.1s;
     box-shadow: var(--shadow);
-    min-height: 100px;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+    overflow-y: auto;
+    padding: 12px 10px;
 }
 
-.score-btn:active {
-    transform: scale(0.96);
-    box-shadow: var(--shadow-lg);
-}
-
-.score-btn-p1 {
-    background: var(--p1-bg);
+.player-card-p1 {
+    background: linear-gradient(145deg, #e8f4fd, #d0e8f9);
     color: var(--p1-color);
     border: 3px solid var(--p1-color);
 }
 
-.score-btn-p1:active {
-    background: var(--p1-color);
-    color: white;
-}
-
-.score-btn-p2 {
-    background: var(--p2-bg);
+.player-card-p2 {
+    background: linear-gradient(145deg, #fdeaea, #f9d0d0);
     color: var(--p2-color);
     border: 3px solid var(--p2-color);
 }
 
-.score-btn-p2:active {
-    background: var(--p2-color);
-    color: white;
+.card-serve {
+    font-size: 20px;
+    font-weight: 700;
+    opacity: 0.85;
 }
 
-.score-btn-name {
-    font-weight: 800;
-    font-size: 20px;
-    margin-bottom: 4px;
+.card-name {
+    font-weight: 900;
+    font-size: 33px;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    padding: 0 8px;
+    padding: 0 4px;
+    line-height: 1.3;
 }
 
-.score-btn-label {
-    font-size: 12px;
-    font-weight: 600;
-    opacity: 0.7;
-    text-transform: uppercase;
+.card-game-score {
+    font-weight: 800;
+    font-size: 54px;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.85;
 }
 
-/* Bottom Bar */
-.match-bottombar {
+.card-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    width: 100%;
+    margin-top: 12px;
+    padding: 0 4px;
+}
+
+.card-action {
+    flex: 1;
+    min-width: 0;
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px;
-    padding-bottom: calc(8px + var(--safe-bottom));
-    background: var(--card-bg);
-    border-top: 1px solid var(--border);
-    flex-shrink: 0;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.3;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.1s;
+    color: white;
+    text-align: center;
 }
 
-.btn-undo {
-    background: #f5f5f5;
-    color: #666;
-    padding: 8px 16px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 600;
-    transition: background 0.15s;
+.card-action:active {
+    transform: scale(0.96);
+    opacity: 0.85;
 }
 
-.btn-undo:active {
-    background: #e0e0e0;
+.card-action.normal {
+    background: var(--primary);
 }
 
-.match-status-text {
-    font-size: 12px;
-    color: var(--text-secondary);
-    text-align: right;
-    max-width: 50%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.card-action.ace {
+    background: var(--ace-color);
+}
+
+.card-action.df {
+    background: var(--df-color);
+}
+
+.card-action.ue {
+    background: var(--ue-color);
 }
 
 /* Match Menu */
@@ -822,9 +887,92 @@ input, select {
 }
 
 /* ============================================
-   LANDSCAPE ADJUSTMENTS
+   PORTRAIT MODE
+   ============================================ */
+@media (orientation: portrait) {
+    /* Match screen background for portrait */
+    #match-screen {
+        background:
+            radial-gradient(ellipse at 50% 100%, var(--court-accent) 0%, transparent 50%),
+            linear-gradient(180deg, var(--court-grad-1) 0%, var(--court-grad-2) 28%, #eef1f5 28.5%);
+    }
+
+    .scoreboard table {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .scoreboard th:first-child {
+        width: 38%;
+    }
+
+    .scoring-area {
+        flex-direction: row;
+        padding: 12px;
+    }
+
+    .card-name {
+        font-size: 36px;
+    }
+
+    .card-game-score {
+        font-size: 66px;
+    }
+
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .card-action {
+        aspect-ratio: auto;
+        padding: 16px 4px;
+        font-size: 34px;
+    }
+}
+
+/* Smaller portrait screens */
+@media (orientation: portrait) and (max-height: 700px) {
+    .card-game-score {
+        font-size: 48px;
+    }
+
+    .card-name {
+        font-size: 27px;
+    }
+
+    .card-action {
+        aspect-ratio: auto;
+        padding: 12px 4px;
+        font-size: 28px;
+    }
+}
+
+/* Very small portrait */
+@media (orientation: portrait) and (max-height: 580px) {
+    .scoring-area {
+        padding: 6px 10px;
+    }
+
+    .card-game-score {
+        font-size: 42px;
+    }
+
+    .card-name {
+        font-size: 24px;
+    }
+
+    .card-action {
+        aspect-ratio: auto;
+        padding: 10px 4px;
+        font-size: 24px;
+    }
+}
+
+/* ============================================
+   LANDSCAPE MODE
    ============================================ */
 @media (orientation: landscape) {
+    /* Setup screen */
     .setup-container {
         padding: 12px 16px;
     }
@@ -841,134 +989,142 @@ input, select {
         font-size: 22px;
     }
 
-    /* Match screen landscape */
+    /* Match screen background for landscape */
+    #match-screen {
+        background:
+            radial-gradient(ellipse at 80% 100%, var(--court-accent) 0%, transparent 45%),
+            linear-gradient(180deg, var(--court-grad-1) 0%, var(--court-grad-2) 30%, #eaecf0 30.5%);
+    }
+
+    /* Top bar - compact */
     .match-topbar {
         padding: 3px 16px;
-        padding-left: calc(16px + var(--safe-left));
-        padding-right: calc(16px + var(--safe-right));
+        padding-left: calc(12px + var(--safe-left));
+        padding-right: calc(12px + var(--safe-right));
         min-height: 28px;
         font-size: 12px;
     }
 
+    .match-timer { font-size: 12px; }
+
+    .btn-undo {
+        padding: 3px 8px;
+        font-size: 11px;
+    }
+
+    /* Scoreboard - left-aligned, compact */
     .scoreboard {
-        padding: 2px 16px 6px;
-        padding-left: calc(16px + var(--safe-left));
-        padding-right: calc(16px + var(--safe-right));
+        padding: 0 16px 6px;
+        padding-left: calc(12px + var(--safe-left));
+        padding-right: calc(12px + var(--safe-right));
     }
 
-    .scoreboard td {
-        font-size: 16px;
-        padding: 4px 4px;
-    }
-
-    .scoreboard td:first-child {
-        font-size: 13px;
-    }
-
-    .scoreboard td.set-score {
-        font-size: 17px;
-    }
-
-    .scoreboard td.game-score {
-        font-size: 20px;
+    .scoreboard table {
+        width: auto;
+        table-layout: auto;
     }
 
     .scoreboard th {
         font-size: 9px;
+        padding: 1px 6px;
     }
 
-    .point-type-bar {
-        padding: 4px 16px;
-        padding-left: calc(16px + var(--safe-left));
-        padding-right: calc(16px + var(--safe-right));
-        gap: 8px;
+    .scoreboard td {
+        font-size: 15px;
+        padding: 3px 6px;
     }
 
-    .point-type-btn {
-        padding: 4px 16px;
-        font-size: 12px;
+    .scoreboard td:first-child {
+        font-size: 13px;
+        max-width: 120px;
+        padding-right: 12px;
     }
 
+    .scoreboard td.set-score {
+        font-size: 16px;
+        min-width: 22px;
+    }
+
+    .scoreboard td.game-score {
+        font-size: 18px;
+        min-width: 32px;
+        padding-left: 10px;
+    }
+
+    .match-status-banner {
+        padding: 4px 12px;
+        font-size: 14px;
+        min-height: 28px;
+    }
+
+    /* Scoring area */
     .scoring-area {
         padding: 6px 16px;
-        padding-left: calc(16px + var(--safe-left));
-        padding-right: calc(16px + var(--safe-right));
+        padding-left: calc(12px + var(--safe-left));
+        padding-right: calc(12px + var(--safe-right));
         gap: 12px;
+        flex-direction: row;
         min-height: 0;
     }
 
-    .score-btn {
-        min-height: 60px;
+    .player-card {
+        padding: 6px 10px;
+        gap: 2px;
     }
 
-    .score-btn-name {
-        font-size: 18px;
+    .card-name {
+        font-size: 24px;
     }
 
-    .match-bottombar {
-        padding: 4px 16px;
-        padding-left: calc(16px + var(--safe-left));
-        padding-right: calc(16px + var(--safe-right));
-        padding-bottom: calc(4px + var(--safe-bottom));
+    .card-game-score {
+        font-size: 36px;
+    }
+
+    .card-serve {
+        font-size: 16px;
+    }
+
+    .card-actions {
+        gap: 12px;
+        margin-top: 6px;
+    }
+
+    .card-action {
+        padding: 10px 4px;
+        font-size: 26px;
     }
 }
 
-/* Small screen height (landscape phones) */
-@media (orientation: landscape) and (max-height: 450px) {
+/* Very small landscape (phones) */
+@media (orientation: landscape) and (max-height: 420px) {
     .match-topbar {
         padding-top: 2px;
         padding-bottom: 2px;
-        min-height: 24px;
+        min-height: 22px;
         font-size: 11px;
     }
 
-    .match-timer { font-size: 12px; }
+    .match-timer { font-size: 11px; }
+    .btn-undo { padding: 2px 7px; font-size: 10px; }
 
     .scoreboard {
-        padding: 0 16px 4px;
-        padding-left: calc(16px + var(--safe-left));
+        padding: 0 12px 3px;
+        padding-left: calc(12px + var(--safe-left));
     }
 
-    .scoreboard td { padding: 2px 4px; font-size: 15px; }
+    .scoreboard td { padding: 2px 5px; font-size: 14px; }
     .scoreboard td:first-child { font-size: 12px; }
-    .scoreboard td.game-score { font-size: 18px; }
-    .scoreboard td.set-score { font-size: 15px; }
+    .scoreboard td.game-score { font-size: 16px; }
+    .scoreboard td.set-score { font-size: 14px; }
 
-    .point-type-bar { padding: 3px 16px; }
-    .point-type-btn { padding: 3px 12px; font-size: 11px; }
-
-    .scoring-area { padding: 4px 16px; gap: 10px; }
-    .score-btn { min-height: 50px; }
-    .score-btn-name { font-size: 16px; }
-    .score-btn-label { font-size: 10px; }
-
-    .match-bottombar { padding: 3px 16px; }
-    .btn-undo { padding: 5px 12px; font-size: 12px; }
-}
-
-/* ============================================
-   PORTRAIT ADJUSTMENTS
-   ============================================ */
-@media (orientation: portrait) {
-    .scoring-area {
-        flex-direction: row;
-        min-height: 180px;
-    }
-
-    .score-btn {
-        min-height: 140px;
-    }
-}
-
-/* Smaller portrait screens */
-@media (orientation: portrait) and (max-height: 667px) {
-    .score-btn {
-        min-height: 100px;
-    }
-
-    .scoring-area {
-        min-height: 120px;
-    }
+    .scoring-area { padding: 4px 12px; gap: 10px; }
+    .player-card { gap: 1px; padding: 4px 8px; }
+    .card-name { font-size: 21px; }
+    .card-game-score { font-size: 30px; }
+    .card-actions { gap: 12px; margin-top: 2px; }
+    .card-action { padding: 6px 3px; font-size: 22px; }
+    .card-serve { font-size: 10px; }
+    .match-status-banner { padding: 2px 12px; font-size: 12px; min-height: 22px; }
 }
 
 /* ============================================

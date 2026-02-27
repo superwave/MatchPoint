@@ -9,7 +9,6 @@ const STORAGE_KEY = 'matchpoint_match';
 
 // ==================== STATE ====================
 let match = null;
-let selectedPointType = 'normal'; // normal, ace, doubleFault, winner, unforcedError
 let timerInterval = null;
 
 // ==================== INITIALIZATION ====================
@@ -36,8 +35,9 @@ function resumeMatch() {
     if (saved) {
         try {
             match = JSON.parse(saved);
-            document.getElementById('score-btn-name-1').textContent = match.config.player1;
-            document.getElementById('score-btn-name-2').textContent = match.config.player2;
+            document.getElementById('card-name-1').textContent = match.config.player1;
+            document.getElementById('card-name-2').textContent = match.config.player2;
+            document.getElementById('match-screen').setAttribute('data-court', match.config.courtType);
             showScreen('match-screen');
             startTimer();
             updateDisplay();
@@ -104,7 +104,6 @@ function initMatch(config) {
         stats: {
             aces: [0, 0],
             doubleFaults: [0, 0],
-            winners: [0, 0],
             unforcedErrors: [0, 0],
             breakPointsWon: [0, 0],
             breakPointsFaced: [0, 0],
@@ -117,9 +116,12 @@ function initMatch(config) {
         pointLog: []
     };
 
-    // Set player names on buttons
-    document.getElementById('score-btn-name-1').textContent = config.player1;
-    document.getElementById('score-btn-name-2').textContent = config.player2;
+    // Set player names on cards
+    document.getElementById('card-name-1').textContent = config.player1;
+    document.getElementById('card-name-2').textContent = config.player2;
+
+    // Apply court theme
+    document.getElementById('match-screen').setAttribute('data-court', config.courtType);
 
     startTimer();
     updateDisplay();
@@ -174,12 +176,19 @@ function getMatchDuration() {
 }
 
 // ==================== SCORING ====================
-function handleScore(player) {
+function handleTypedScore(player, type, event) {
+    if (event) event.stopPropagation();
     if (!match || match.matchOver) return;
-
-    // Score for the tapped player with current type (normal, winner, or UE)
-    scorePoint(player, selectedPointType);
-    resetPointType();
+    if (type === 'ace') {
+        scorePoint(match.server, 'ace');
+    } else if (type === 'doubleFault') {
+        const receiver = match.server === 1 ? 2 : 1;
+        scorePoint(receiver, 'doubleFault');
+    } else if (type === 'unforcedError') {
+        scorePoint(player, 'unforcedError');
+    } else {
+        scorePoint(player, 'normal');
+    }
 }
 
 function scorePoint(scorer, type) {
@@ -197,8 +206,6 @@ function scorePoint(scorer, type) {
         match.stats.aces[match.server - 1]++;
     } else if (type === 'doubleFault') {
         match.stats.doubleFaults[match.server - 1]++;
-    } else if (type === 'winner') {
-        match.stats.winners[si]++;
     } else if (type === 'unforcedError') {
         match.stats.unforcedErrors[li]++;
     }
@@ -523,54 +530,139 @@ function undoLastPoint() {
     showNotification('已復原 Undo');
 }
 
-// ==================== POINT TYPE SELECTION ====================
-function selectPointType(type) {
-    if (!match || match.matchOver) return;
+// ==================== PLAYER CARDS ====================
+function updatePlayerCards() {
+    // Status banner (between scoreboard and cards)
+    updateStatusBanner();
 
-    // ACE and DF are one-tap actions (auto-score immediately)
-    if (type === 'ace') {
-        scorePoint(match.server, 'ace');
-        return;
-    }
-    if (type === 'doubleFault') {
-        const receiver = match.server === 1 ? 2 : 1;
-        scorePoint(receiver, 'doubleFault');
-        return;
-    }
+    for (let p = 1; p <= 2; p++) {
+        const isServing = match.server === p;
+        const isReceiver = !isServing;
 
-    // Winner and UE: toggle selection, then umpire taps which player won
-    if (selectedPointType === type) {
-        resetPointType();
-        return;
-    }
+        // Serve indicator
+        document.getElementById(`card-serve-${p}`).style.visibility = isServing ? '' : 'hidden';
 
-    selectedPointType = type;
+        // Game score
+        document.getElementById(`card-score-${p}`).textContent = getPointDisplay(p - 1);
 
-    document.querySelectorAll('.point-type-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.type === type);
-    });
-
-    const btn1Label = document.querySelector('#score-btn-p1 .score-btn-label');
-    const btn2Label = document.querySelector('#score-btn-p2 .score-btn-label');
-
-    if (type === 'winner') {
-        btn1Label.textContent = 'Winner 得分';
-        btn2Label.textContent = 'Winner 得分';
-    } else if (type === 'unforcedError') {
-        btn1Label.textContent = '對手失誤得分';
-        btn2Label.textContent = '對手失誤得分';
+        // Action buttons (context-aware)
+        const actionsEl = document.getElementById(`card-actions-${p}`);
+        let html = '';
+        // [得分] — always shown
+        html += `<button class="card-action normal" onclick="handleTypedScore(${p},'normal',event)">得分</button>`;
+        // [得分 / 發球 ACE] — server only
+        if (isServing) {
+            html += `<button class="card-action ace" onclick="handleTypedScore(${p},'ace',event)">得分<br>發球 ACE</button>`;
+        }
+        // [得分 / 對手 DF] — receiver only
+        if (isReceiver) {
+            html += `<button class="card-action df" onclick="handleTypedScore(${p},'doubleFault',event)">得分<br>對手 DF</button>`;
+        }
+        // [得分 / 對手 UE] — both
+        html += `<button class="card-action ue" onclick="handleTypedScore(${p},'unforcedError',event)">得分<br>對手 UE</button>`;
+        actionsEl.innerHTML = html;
     }
 }
 
-function resetPointType() {
-    selectedPointType = 'normal';
-    document.querySelectorAll('.point-type-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    const btn1Label = document.querySelector('#score-btn-p1 .score-btn-label');
-    const btn2Label = document.querySelector('#score-btn-p2 .score-btn-label');
-    if (btn1Label) btn1Label.textContent = '得分 Point';
-    if (btn2Label) btn2Label.textContent = '得分 Point';
+function updateStatusBanner() {
+    const banner = document.getElementById('match-status-banner');
+
+    if (match.matchOver) {
+        banner.classList.add('hidden');
+        return;
+    }
+
+    // Find highest-priority status across both players
+    let best = null; // { priority, text }
+
+    for (let p = 1; p <= 2; p++) {
+        if (!isPlayerAboutToWinGame(p)) continue;
+
+        const name = p === 1 ? match.config.player1 : match.config.player2;
+        const count = countPointOpportunities(p);
+        if (count === 0) continue;
+
+        const isServer = match.server === p;
+        const wouldWinSet = isGameWinSetWin(p);
+        const setsNeeded = Math.ceil(match.config.format / 2);
+        const wouldWinMatch = wouldWinSet && match.setsWon[p - 1] === setsNeeded - 1;
+
+        const cntLabel = count > 1 ? `${count} 個` : '';
+        const cntEn = count > 1 ? `${count} ` : '';
+        const plural = count > 1 ? 's' : '';
+        let priority = 0;
+        let text = '';
+
+        if (wouldWinMatch) {
+            priority = 4;
+            text = `🏆 ${cntLabel}賽末點 ${cntEn}Match Point${plural} — ${name}`;
+        } else if (wouldWinSet) {
+            priority = 3;
+            text = `★ ${cntLabel}盤末點 ${cntEn}Set Point${plural} — ${name}`;
+        } else if (!isServer) {
+            priority = 2;
+            text = `⚡ ${cntLabel}破發點 ${cntEn}Break Point${plural} — ${name}`;
+        } else {
+            priority = 1;
+            text = `● ${cntLabel}局點 ${cntEn}Game Point${plural} — ${name}`;
+        }
+
+        if (!best || priority > best.priority) {
+            best = { priority, text };
+        }
+    }
+
+    if (best) {
+        banner.textContent = best.text;
+        banner.className = 'match-status-banner';
+    } else {
+        banner.className = 'match-status-banner hidden';
+    }
+}
+
+function countPointOpportunities(player) {
+    const pi = player - 1;
+    const oi = 1 - pi;
+
+    if (match.isTiebreak) {
+        const myPts = match.tiebreakPoints[pi];
+        const oppPts = match.tiebreakPoints[oi];
+        if (myPts >= match.tiebreakTarget - 1 && myPts > oppPts) {
+            return myPts - oppPts;
+        }
+        return 0;
+    }
+
+    const myPts = match.gamePoints[pi];
+    const oppPts = match.gamePoints[oi];
+
+    // Deuce territory
+    if (myPts >= 3 && oppPts >= 3) {
+        if (match.advantage === player) return 1;
+        if (match.config.deuceType === 'noAd' && match.advantage === 0) return 1;
+        return 0;
+    }
+
+    // Player at 40, opponent below
+    if (myPts >= 3 && oppPts < 3) {
+        return 3 - oppPts;
+    }
+
+    return 0;
+}
+
+function isGameWinSetWin(player) {
+    const pi = player - 1;
+    const currentGames = match.setScores[match.currentSet];
+
+    // In tiebreak, winning the tiebreak always wins the set
+    if (match.isTiebreak) return true;
+
+    const myGames = currentGames[pi];
+    const oppGames = currentGames[1 - pi];
+
+    // Winning this game gives myGames+1. Need 6+ games and 2-game lead, or 7 after tiebreak
+    return (myGames + 1 >= 6) && (myGames + 1 - oppGames >= 2);
 }
 
 // ==================== DISPLAY ====================
@@ -583,7 +675,7 @@ function updateDisplay() {
     if (!match) return;
     updateScoreboard();
     updateTopBar();
-    updateStatusText();
+    updatePlayerCards();
 }
 
 function updateTopBar() {
@@ -685,24 +777,6 @@ function getPointScoreString() {
     return `${getPointDisplay(0)}-${getPointDisplay(1)}`;
 }
 
-function updateStatusText() {
-    const el = document.getElementById('match-status-text');
-    if (!el) return;
-
-    if (match.isTiebreak) {
-        el.textContent = `Tiebreak · 搶${match.tiebreakTarget}`;
-    } else if (isBreakPoint()) {
-        el.textContent = '⚡ 破發點 Break Point';
-    } else if (isGamePoint()) {
-        el.textContent = '● 局點 Game Point';
-    } else if (isSetPoint()) {
-        el.textContent = '★ 盤末點 Set Point';
-    } else if (isMatchPoint()) {
-        el.textContent = '🏆 賽末點 Match Point';
-    } else {
-        el.textContent = '';
-    }
-}
 
 function isGamePoint() {
     if (match.isTiebreak) return false;
@@ -895,7 +969,6 @@ function renderResultCard() {
     const statsRows = [
         ['Aces 發球直接得分', stats.aces[0], stats.aces[1]],
         ['Double Faults 雙發失誤', stats.doubleFaults[0], stats.doubleFaults[1]],
-        ['Winners 致勝球', stats.winners[0], stats.winners[1]],
         ['Unforced Errors 非受迫性失誤', stats.unforcedErrors[0], stats.unforcedErrors[1]],
         ['Break Points Won 破發成功',
             `${stats.breakPointsWon[0]}/${stats.breakPointsFaced[1]}`,
@@ -1045,7 +1118,6 @@ function exportPDF() {
             body: [
                 ['Aces', stats.aces[0], stats.aces[1]],
                 ['Double Faults', stats.doubleFaults[0], stats.doubleFaults[1]],
-                ['Winners', stats.winners[0], stats.winners[1]],
                 ['Unforced Errors', stats.unforcedErrors[0], stats.unforcedErrors[1]],
                 ['Break Points Won',
                     `${stats.breakPointsWon[0]}/${stats.breakPointsFaced[1]}`,
@@ -1169,7 +1241,6 @@ function newMatch() {
         match = null;
         stopTimer();
         localStorage.removeItem(STORAGE_KEY);
-        resetPointType();
         document.getElementById('resume-banner').classList.add('hidden');
         showScreen('setup-screen');
     }
