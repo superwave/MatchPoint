@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>MatchPoint - Tennis Umpire Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- ==================== SETUP SCREEN ==================== -->
+    <div id="setup-screen" class="screen active">
+        <div class="setup-container">
+            <div class="app-logo">
+                <span class="logo-icon">🎾</span>
+                <h1>MatchPoint</h1>
+                <p class="subtitle">Tennis Umpire Tool</p>
+            </div>
+
+            <div id="resume-banner" class="resume-banner hidden">
+                <p>有未完成的比賽 / Unsaved match found</p>
+                <div class="resume-actions">
+                    <button type="button" class="btn-resume" onclick="resumeMatch()">繼續比賽 Resume</button>
+                    <button type="button" class="btn-discard" onclick="discardSavedMatch()">捨棄 Discard</button>
+                </div>
+            </div>
+
+            <form id="setup-form" onsubmit="handleSetupSubmit(event)">
+                <div class="form-group">
+                    <label for="umpire-name">裁判 Umpire</label>
+                    <input type="text" id="umpire-name" placeholder="裁判姓名 (選填)">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="player1-name">選手 1</label>
+                        <input type="text" id="player1-name" placeholder="選手 1 姓名" required oninput="updateFirstServerOptions()">
+                    </div>
+                    <div class="form-group">
+                        <label for="player2-name">選手 2</label>
+                        <input type="text" id="player2-name" placeholder="選手 2 姓名" required oninput="updateFirstServerOptions()">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="court-type">場地 Court</label>
+                        <select id="court-type">
+                            <option value="Hard">硬地 Hard</option>
+                            <option value="Clay">紅土 Clay</option>
+                            <option value="Grass">草地 Grass</option>
+                            <option value="Carpet">地毯 Carpet</option>
+                            <option value="Indoor">室內 Indoor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="match-format">賽制 Format</label>
+                        <select id="match-format">
+                            <option value="3">三盤兩勝 Best of 3</option>
+                            <option value="5">五盤三勝 Best of 5</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="final-set-type">決勝盤 Final Set</label>
+                        <select id="final-set-type">
+                            <option value="tiebreak7">搶七 Tiebreak (7)</option>
+                            <option value="tiebreak10">超級搶十 Super TB (10)</option>
+                            <option value="advantage">長盤制 Advantage</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="deuce-type">Deuce 規則</label>
+                        <select id="deuce-type">
+                            <option value="ad">占先制 Advantage</option>
+                            <option value="noAd">無占先 No-Ad</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="first-server">先發球 First Server</label>
+                    <select id="first-server">
+                        <option value="1">選手 1</option>
+                        <option value="2">選手 2</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-primary btn-start">開始比賽 Start Match</button>
+            </form>
+        </div>
+        <footer class="author-credit">
+            Made by Wayne · wayne.superwave@gmail.com
+        </footer>
+    </div>
+
+    <!-- ==================== MATCH SCREEN ==================== -->
+    <div id="match-screen" class="screen">
+        <!-- Top Bar -->
+        <div class="match-topbar">
+            <div class="match-info">
+                <span id="match-set-info">Set 1</span>
+                <span class="separator">|</span>
+                <span id="match-server-info">Serving: --</span>
+            </div>
+            <div id="match-timer" class="match-timer">00:00</div>
+            <button class="btn-icon btn-menu" onclick="toggleMatchMenu()" aria-label="Menu">☰</button>
+        </div>
+
+        <!-- Scoreboard -->
+        <div class="scoreboard" id="scoreboard">
+            <!-- Generated dynamically -->
+        </div>
+
+        <!-- Point Type Selector -->
+        <div class="point-type-bar">
+            <button class="point-type-btn" data-type="ace" onclick="selectPointType('ace')">ACE</button>
+            <button class="point-type-btn" data-type="doubleFault" onclick="selectPointType('doubleFault')">DF</button>
+            <button class="point-type-btn" data-type="winner" onclick="selectPointType('winner')">Winner</button>
+            <button class="point-type-btn" data-type="unforcedError" onclick="selectPointType('unforcedError')">UE</button>
+        </div>
+
+        <!-- Scoring Buttons -->
+        <div class="scoring-area">
+            <button class="score-btn score-btn-p1" id="score-btn-p1" onclick="handleScore(1)">
+                <span class="score-btn-name" id="score-btn-name-1">Player 1</span>
+                <span class="score-btn-label">得分 Point</span>
+            </button>
+            <button class="score-btn score-btn-p2" id="score-btn-p2" onclick="handleScore(2)">
+                <span class="score-btn-name" id="score-btn-name-2">Player 2</span>
+                <span class="score-btn-label">得分 Point</span>
+            </button>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="match-bottombar">
+            <button class="btn-undo" onclick="undoLastPoint()">↩ 復原 Undo</button>
+            <div id="match-status-text" class="match-status-text"></div>
+        </div>
+
+        <!-- Match Menu Overlay -->
+        <div id="match-menu" class="match-menu hidden">
+            <div class="menu-overlay" onclick="toggleMatchMenu()"></div>
+            <div class="menu-panel">
+                <h3>比賽選單 Match Menu</h3>
+                <button onclick="confirmEndMatch(1)">選手 1 退賽 Player 1 Retires</button>
+                <button onclick="confirmEndMatch(2)">選手 2 退賽 Player 2 Retires</button>
+                <button onclick="confirmEndMatch(0)">中止比賽 Suspend Match</button>
+                <button class="menu-cancel" onclick="toggleMatchMenu()">返回比賽 Back</button>
+            </div>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <!-- ==================== SUMMARY SCREEN ==================== -->
+    <div id="summary-screen" class="screen">
+        <div class="summary-container">
+            <!-- Result Card (for screenshot) -->
+            <div class="result-card" id="result-card">
+                <div class="result-header">
+                    <div class="result-logo">🎾 MatchPoint</div>
+                    <div class="result-title">比賽結果 Match Result</div>
+                    <div class="result-meta">
+                        <span id="summary-date"></span>
+                        <span class="dot">·</span>
+                        <span id="summary-court"></span>
+                        <span class="dot">·</span>
+                        <span id="summary-format"></span>
+                    </div>
+                </div>
+
+                <div class="result-score-section">
+                    <div class="result-player" id="summary-p1-row">
+                        <span class="result-player-name" id="summary-p1-name">Player 1</span>
+                        <span class="result-set-scores" id="summary-p1-sets"></span>
+                        <span class="result-winner-badge hidden" id="summary-p1-badge">🏆</span>
+                    </div>
+                    <div class="result-player" id="summary-p2-row">
+                        <span class="result-player-name" id="summary-p2-name">Player 2</span>
+                        <span class="result-set-scores" id="summary-p2-sets"></span>
+                        <span class="result-winner-badge hidden" id="summary-p2-badge">🏆</span>
+                    </div>
+                </div>
+
+                <div id="summary-retirement" class="result-retirement hidden"></div>
+
+                <div class="result-stats-section">
+                    <table class="result-stats-table" id="summary-stats-table">
+                        <thead>
+                            <tr>
+                                <th>統計 Stats</th>
+                                <th id="stats-p1-header">P1</th>
+                                <th id="stats-p2-header">P2</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summary-stats-body">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="result-footer">
+                    <div class="result-duration" id="summary-duration"></div>
+                    <div class="result-umpire" id="summary-umpire"></div>
+                    <div class="result-credit">MatchPoint by Wayne · wayne.superwave@gmail.com</div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="summary-actions">
+                <button class="btn-primary btn-pdf" onclick="exportPDF()">📄 匯出 PDF Export</button>
+                <button class="btn-secondary" onclick="newMatch()">🎾 新比賽 New Match</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
