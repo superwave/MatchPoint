@@ -6,10 +6,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1a1a2e">
-    <title>MatchPoint - Tennis Umpire Tool</title>
+    <title>MatchPoint - 網球裁判計分板</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
@@ -20,7 +21,7 @@
             <div class="app-logo">
                 <span class="logo-icon">🎾</span>
                 <h1>MatchPoint</h1>
-                <p class="subtitle">Tennis Umpire Tool</p>
+                <p class="subtitle">網球裁判計分板</p>
             </div>
 
             <div id="resume-banner" class="resume-banner hidden">
@@ -62,6 +63,7 @@
                     <div class="form-group">
                         <label for="match-format">賽制 Format</label>
                         <select id="match-format">
+                            <option value="1" selected>一盤決勝 1 Set</option>
                             <option value="3">三盤兩勝 Best of 3</option>
                             <option value="5">五盤三勝 Best of 5</option>
                         </select>
@@ -97,8 +99,23 @@
                 <button type="submit" class="btn-primary btn-start">開始比賽 Start Match</button>
             </form>
         </div>
+        <!-- Install prompt -->
+        <div id="install-prompt" class="install-prompt hidden">
+            <button id="btn-install" class="btn-install">📲 加入主畫面 Add to Home Screen</button>
+        </div>
+
+        <!-- Install instructions modal -->
+        <div id="install-modal" class="install-modal hidden">
+            <div class="install-modal-overlay" id="install-modal-overlay"></div>
+            <div class="install-modal-panel">
+                <h3>加入主畫面</h3>
+                <div id="install-instructions"></div>
+                <button id="btn-install-close" class="btn-primary" style="margin-top:12px;">知道了</button>
+            </div>
+        </div>
+
         <footer class="author-credit">
-            Made by Wayne · wayne.superwave@gmail.com
+            MatchPoint - 網球裁判計分板 · Made by Wayne
         </footer>
     </div>
 
@@ -124,7 +141,7 @@
         </div>
 
         <!-- Status Banner -->
-        <div id="match-status-banner" class="match-status-banner hidden"></div>
+        <div id="match-status-banner" class="match-status-banner banner-hidden"></div>
 
         <!-- Player Scoring Cards -->
         <div class="scoring-area">
@@ -146,7 +163,7 @@
         <div id="match-menu" class="match-menu hidden">
             <div id="menu-overlay" class="menu-overlay"></div>
             <div class="menu-panel">
-                <h3>比賽選單 Match Menu</h3>
+                <h3>比賽選單</h3>
                 <button data-end-match="1">選手 1 退賽 Player 1 Retires</button>
                 <button data-end-match="2">選手 2 退賽 Player 2 Retires</button>
                 <button data-end-match="0">中止比賽 Suspend Match</button>
@@ -164,8 +181,8 @@
             <!-- Result Card (for screenshot) -->
             <div class="result-card" id="result-card">
                 <div class="result-header">
-                    <div class="result-logo">🎾 MatchPoint</div>
-                    <div class="result-title">比賽結果 Match Result</div>
+                    <div class="result-logo">🎾 MatchPoint - 網球裁判計分板</div>
+                    <div class="result-title">比賽結果</div>
                     <div class="result-meta">
                         <span id="summary-date"></span>
                         <span class="dot">·</span>
@@ -177,14 +194,14 @@
 
                 <div class="result-score-section">
                     <div class="result-player" id="summary-p1-row">
+                        <span class="result-winner-badge hidden" id="summary-p1-badge">🏆</span>
                         <span class="result-player-name" id="summary-p1-name">Player 1</span>
                         <span class="result-set-scores" id="summary-p1-sets"></span>
-                        <span class="result-winner-badge hidden" id="summary-p1-badge">🏆</span>
                     </div>
                     <div class="result-player" id="summary-p2-row">
+                        <span class="result-winner-badge hidden" id="summary-p2-badge">🏆</span>
                         <span class="result-player-name" id="summary-p2-name">Player 2</span>
                         <span class="result-set-scores" id="summary-p2-sets"></span>
-                        <span class="result-winner-badge hidden" id="summary-p2-badge">🏆</span>
                     </div>
                 </div>
 
@@ -207,13 +224,13 @@
                 <div class="result-footer">
                     <div class="result-duration" id="summary-duration"></div>
                     <div class="result-umpire" id="summary-umpire"></div>
-                    <div class="result-credit">MatchPoint by Wayne · wayne.superwave@gmail.com</div>
+                    <div class="result-credit">MatchPoint - 網球裁判計分板 · Made by Wayne</div>
                 </div>
             </div>
 
             <!-- Actions -->
             <div class="summary-actions">
-                <button id="btn-export-pdf" class="btn-primary btn-pdf">📄 匯出 PDF Export</button>
+                <button id="btn-export-pdf" class="btn-primary">📷 儲存圖片 Save Image</button>
                 <button id="btn-new-match" class="btn-secondary">🎾 新比賽 New Match</button>
             </div>
         </div>

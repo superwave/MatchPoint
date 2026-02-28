@@ -8,7 +8,7 @@ import { showNotification } from './notifications.js';
 import { scorePoint } from './scoring.js';
 import { showScreen, updateDisplay } from './display.js';
 import { showSummary } from './summary.js';
-import { exportPDF } from './pdf.js';
+import { exportImage } from './pdf.js';
 
 // ==================== SCORING FLOW ====================
 
@@ -34,6 +34,12 @@ function handleTypedScore(player, type, event) {
     const result = scorePoint(scorer, scoreType);
     updateDisplay();
     saveToStorage();
+
+    // Flash the scoring player's card
+    const card = document.getElementById(`player-card-${player}`);
+    card.classList.remove('card-flash');
+    void card.offsetWidth; // force reflow
+    card.classList.add('card-flash');
 
     if (result.matchOver) {
         setTimeout(() => {
@@ -187,6 +193,83 @@ function newMatch() {
     }
 }
 
+// ==================== INSTALL (Add to Home Screen) ====================
+
+let deferredInstallPrompt = null;
+
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+}
+
+function detectPlatform() {
+    const ua = navigator.userAgent;
+    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+        return 'ios';
+    }
+    if (/Android/.test(ua)) return 'android';
+    return 'other';
+}
+
+function setupInstallPrompt() {
+    if (isStandalone()) return; // Already installed
+
+    const installPrompt = document.getElementById('install-prompt');
+    const btnInstall = document.getElementById('btn-install');
+    const modal = document.getElementById('install-modal');
+    const modalOverlay = document.getElementById('install-modal-overlay');
+    const btnClose = document.getElementById('btn-install-close');
+    const instructions = document.getElementById('install-instructions');
+    const platform = detectPlatform();
+
+    // Listen for Android native install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        installPrompt.classList.remove('hidden');
+    });
+
+    // Show button on iOS / other (no beforeinstallprompt)
+    if (platform === 'ios' || platform === 'other') {
+        installPrompt.classList.remove('hidden');
+    }
+
+    btnInstall.addEventListener('click', () => {
+        if (deferredInstallPrompt) {
+            // Android native prompt
+            deferredInstallPrompt.prompt();
+            deferredInstallPrompt.userChoice.then(() => {
+                deferredInstallPrompt = null;
+                installPrompt.classList.add('hidden');
+            });
+        } else {
+            // Show manual instructions
+            if (platform === 'ios') {
+                instructions.innerHTML = `<ol class="install-steps">
+                    <li>1. 點擊 Safari 底部的 <strong>分享按鈕</strong> ⬆️</li>
+                    <li>2. 向下滑動，選擇 <strong>「加入主畫面」</strong></li>
+                    <li>3. 點擊右上角 <strong>「新增」</strong></li>
+                </ol>`;
+            } else {
+                instructions.innerHTML = `<ol class="install-steps">
+                    <li>1. 點擊瀏覽器右上角 <strong>選單 ⋮</strong></li>
+                    <li>2. 選擇 <strong>「加入主畫面」</strong>或<strong>「安裝應用程式」</strong></li>
+                    <li>3. 確認安裝</li>
+                </ol>`;
+            }
+            modal.classList.remove('hidden');
+        }
+    });
+
+    btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+    modalOverlay.addEventListener('click', () => modal.classList.add('hidden'));
+
+    // Hide after installed
+    window.addEventListener('appinstalled', () => {
+        installPrompt.classList.add('hidden');
+    });
+}
+
 // ==================== EVENT BINDINGS ====================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -236,6 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Summary actions
-    document.getElementById('btn-export-pdf').addEventListener('click', exportPDF);
+    document.getElementById('btn-export-pdf').addEventListener('click', exportImage);
     document.getElementById('btn-new-match').addEventListener('click', newMatch);
+
+    // Install prompt
+    setupInstallPrompt();
 });

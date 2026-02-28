@@ -35,14 +35,16 @@ export function updatePlayerCards() {
 
         const actionsEl = document.getElementById(`card-actions-${p}`);
         let html = '';
-        html += `<button class="card-action normal" data-player="${p}" data-type="normal">得分</button>`;
+        html += `<div class="card-actions-primary"><button class="card-action normal" data-player="${p}" data-type="normal">得分</button></div>`;
+        html += `<div class="card-actions-secondary">`;
         if (isServing) {
-            html += `<button class="card-action ace" data-player="${p}" data-type="ace">得分<br>發球 ACE</button>`;
+            html += `<button class="card-action ace" data-player="${p}" data-type="ace">得分<br><span class="action-tag">發球 ACE</span></button>`;
         }
         if (isReceiver) {
-            html += `<button class="card-action df" data-player="${p}" data-type="doubleFault">得分<br>對手 DF</button>`;
+            html += `<button class="card-action df" data-player="${p}" data-type="doubleFault">得分<br><span class="action-tag">對手 DF</span></button>`;
         }
-        html += `<button class="card-action ue" data-player="${p}" data-type="unforcedError">得分<br>對手 UE</button>`;
+        html += `<button class="card-action ue" data-player="${p}" data-type="unforcedError">得分<br><span class="action-tag">對手 UE</span></button>`;
+        html += `</div>`;
         actionsEl.innerHTML = html;
     }
 }
@@ -53,7 +55,7 @@ function updateStatusBanner() {
     const banner = document.getElementById('match-status-banner');
 
     if (match.matchOver) {
-        banner.classList.add('hidden');
+        banner.classList.add('banner-hidden');
         return;
     }
 
@@ -100,7 +102,7 @@ function updateStatusBanner() {
         banner.textContent = best.text;
         banner.className = 'match-status-banner';
     } else {
-        banner.className = 'match-status-banner hidden';
+        banner.className = 'match-status-banner banner-hidden';
     }
 }
 

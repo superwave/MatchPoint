@@ -23,9 +23,10 @@ function renderResultCard() {
     });
     document.getElementById('summary-date').textContent = dateStr;
 
-    // Court & format
-    document.getElementById('summary-court').textContent = match.config.courtType;
-    const formatStr = match.config.format === 3 ? 'Best of 3' : 'Best of 5';
+    // Court & format (Chinese)
+    const courtMap = { Hard: '硬地', Clay: '紅土', Grass: '草地', Carpet: '地毯', Indoor: '室內' };
+    document.getElementById('summary-court').textContent = courtMap[match.config.courtType] || match.config.courtType;
+    const formatStr = match.config.format === 1 ? '一盤決勝' : match.config.format === 3 ? '三盤兩勝' : '五盤三勝';
     document.getElementById('summary-format').textContent = formatStr;
 
     // Player names

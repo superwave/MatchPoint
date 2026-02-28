@@ -40,6 +40,8 @@
     --court-grad-2: #2a6496;
     --court-accent: #3498db;
     --court-surface: rgba(52, 152, 219, 0.08);
+    --court-pattern: none;
+    --court-pattern-light: none;
 
     --radius: 12px;
     --radius-sm: 8px;
@@ -53,39 +55,55 @@
 }
 
 /* === Court Themes === */
+
+/* Hard Court — geometric diamond grid (concrete texture) */
 #match-screen[data-court="Hard"] {
     --court-grad-1: #0c2d48;
     --court-grad-2: #1a5276;
     --court-accent: #2e86c1;
-    --court-surface: rgba(46, 134, 193, 0.06);
+    --court-surface: #dce8f3;
+    --court-pattern: url("data:image/svg+xml,%3Csvg width='48' height='48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M24 0L48 24L24 48L0 24Z' fill='none' stroke='%231a5276' stroke-width='1.5' opacity='0.3'/%3E%3Cpath d='M24 10L38 24L24 38L10 24Z' fill='none' stroke='%232e86c1' stroke-width='0.8' opacity='0.18'/%3E%3C/svg%3E");
+    --court-pattern-light: url("data:image/svg+xml,%3Csvg width='48' height='48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M24 0L48 24L24 48L0 24Z' fill='none' stroke='white' stroke-width='1' opacity='0.07'/%3E%3Cpath d='M24 10L38 24L24 38L10 24Z' fill='none' stroke='white' stroke-width='0.5' opacity='0.04'/%3E%3C/svg%3E");
 }
 
+/* Clay Court — diagonal hatching (terre battue) */
 #match-screen[data-court="Clay"] {
     --court-grad-1: #6e2c00;
     --court-grad-2: #a04000;
     --court-accent: #d35400;
-    --court-surface: rgba(211, 84, 0, 0.06);
+    --court-surface: #f0ddd0;
+    --court-pattern: url("data:image/svg+xml,%3Csvg width='32' height='32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 32L32 0' stroke='%23a04000' stroke-width='1.5' opacity='0.28'/%3E%3Cpath d='M-8 8L8 -8' stroke='%23d35400' stroke-width='1' opacity='0.18'/%3E%3Cpath d='M24 40L40 24' stroke='%23d35400' stroke-width='1' opacity='0.18'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%23a04000' opacity='0.2'/%3E%3Ccircle cx='4' cy='28' r='1.5' fill='%23d35400' opacity='0.15'/%3E%3C/svg%3E");
+    --court-pattern-light: url("data:image/svg+xml,%3Csvg width='32' height='32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 32L32 0' stroke='white' stroke-width='1' opacity='0.07'/%3E%3Cpath d='M-8 8L8 -8' stroke='white' stroke-width='0.6' opacity='0.04'/%3E%3Cpath d='M24 40L40 24' stroke='white' stroke-width='0.6' opacity='0.04'/%3E%3Ccircle cx='16' cy='16' r='1.5' fill='white' opacity='0.05'/%3E%3C/svg%3E");
 }
 
+/* Grass Court — short vertical strokes (grass blades) */
 #match-screen[data-court="Grass"] {
     --court-grad-1: #0b3d1e;
     --court-grad-2: #1e6b3e;
     --court-accent: #27ae60;
-    --court-surface: rgba(39, 174, 96, 0.06);
+    --court-surface: #d4eadb;
+    --court-pattern: url("data:image/svg+xml,%3Csvg width='20' height='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 24V14' stroke='%231e6b3e' stroke-width='2.5' stroke-linecap='round' opacity='0.3'/%3E%3Cpath d='M7 24V18' stroke='%2327ae60' stroke-width='1.8' stroke-linecap='round' opacity='0.25'/%3E%3Cpath d='M13 24V13' stroke='%231e6b3e' stroke-width='2' stroke-linecap='round' opacity='0.3'/%3E%3Cpath d='M17 24V19' stroke='%2327ae60' stroke-width='1.5' stroke-linecap='round' opacity='0.22'/%3E%3Cpath d='M10 24V16' stroke='%232ecc71' stroke-width='1.5' stroke-linecap='round' opacity='0.25'/%3E%3C/svg%3E");
+    --court-pattern-light: url("data:image/svg+xml,%3Csvg width='20' height='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 24V14' stroke='white' stroke-width='1.8' stroke-linecap='round' opacity='0.06'/%3E%3Cpath d='M7 24V18' stroke='white' stroke-width='1.2' stroke-linecap='round' opacity='0.05'/%3E%3Cpath d='M13 24V13' stroke='white' stroke-width='1.5' stroke-linecap='round' opacity='0.06'/%3E%3Cpath d='M17 24V19' stroke='white' stroke-width='1' stroke-linecap='round' opacity='0.04'/%3E%3Cpath d='M10 24V16' stroke='white' stroke-width='1' stroke-linecap='round' opacity='0.05'/%3E%3C/svg%3E");
 }
 
+/* Carpet Court — woven crosshatch pattern (fabric) */
 #match-screen[data-court="Carpet"] {
     --court-grad-1: #2c003e;
     --court-grad-2: #512e5f;
     --court-accent: #8e44ad;
-    --court-surface: rgba(142, 68, 173, 0.06);
+    --court-surface: #e8d9f0;
+    --court-pattern: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 8h16' stroke='%23512e5f' stroke-width='1.2' opacity='0.25'/%3E%3Cpath d='M8 0v16' stroke='%23512e5f' stroke-width='1.2' opacity='0.25'/%3E%3Crect x='0' y='0' width='16' height='16' fill='none' stroke='%238e44ad' stroke-width='0.6' opacity='0.15'/%3E%3C/svg%3E");
+    --court-pattern-light: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 8h16' stroke='white' stroke-width='0.8' opacity='0.06'/%3E%3Cpath d='M8 0v16' stroke='white' stroke-width='0.8' opacity='0.06'/%3E%3Crect x='0' y='0' width='16' height='16' fill='none' stroke='white' stroke-width='0.4' opacity='0.03'/%3E%3C/svg%3E");
 }
 
+/* Indoor Court — subtle court line grid (gymnasium) */
 #match-screen[data-court="Indoor"] {
     --court-grad-1: #1c2833;
     --court-grad-2: #2c3e50;
     --court-accent: #5d6d7e;
-    --court-surface: rgba(93, 109, 126, 0.06);
+    --court-surface: #dde1e6;
+    --court-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='6' width='48' height='48' fill='none' stroke='%232c3e50' stroke-width='1.2' opacity='0.22'/%3E%3Cline x1='30' y1='6' x2='30' y2='54' stroke='%235d6d7e' stroke-width='0.8' opacity='0.18'/%3E%3Ccircle cx='30' cy='30' r='10' fill='none' stroke='%235d6d7e' stroke-width='0.8' opacity='0.2'/%3E%3C/svg%3E");
+    --court-pattern-light: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='6' width='48' height='48' fill='none' stroke='white' stroke-width='0.8' opacity='0.06'/%3E%3Cline x1='30' y1='6' x2='30' y2='54' stroke='white' stroke-width='0.5' opacity='0.04'/%3E%3Ccircle cx='30' cy='30' r='10' fill='none' stroke='white' stroke-width='0.5' opacity='0.05'/%3E%3C/svg%3E");
 }
 
 /* === Reset === */
@@ -308,6 +326,79 @@ input, select {
     margin-top: 8px;
 }
 
+/* Install prompt */
+.install-prompt {
+    text-align: center;
+    padding: 0 16px 8px;
+}
+
+.btn-install {
+    background: transparent;
+    color: var(--primary);
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    border: 1.5px dashed var(--primary);
+    width: 100%;
+    max-width: 520px;
+    transition: background 0.2s;
+}
+
+.btn-install:active {
+    background: #e8f5e9;
+}
+
+/* Install modal */
+.install-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.install-modal.hidden {
+    display: none;
+}
+
+.install-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+.install-modal-panel {
+    position: relative;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    width: 90%;
+    max-width: 360px;
+    z-index: 1;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.install-modal-panel h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: var(--text);
+}
+
+.install-steps {
+    text-align: left;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+}
+
+.install-steps li {
+    margin-bottom: 4px;
+    list-style: none;
+}
+
 /* Author credit */
 .author-credit {
     text-align: center;
@@ -340,7 +431,9 @@ input, select {
     justify-content: space-between;
     padding: 6px 12px;
     padding-top: calc(6px + var(--safe-top));
-    background: var(--court-grad-1);
+    background-color: var(--court-grad-1);
+    background-image: var(--court-pattern-light);
+    background-repeat: repeat;
     color: var(--sb-text);
     font-size: 13px;
     min-height: 36px;
@@ -368,7 +461,7 @@ input, select {
 .topbar-actions {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 12px;
     flex-shrink: 0;
 }
 
@@ -401,7 +494,9 @@ input, select {
 
 /* Scoreboard */
 .scoreboard {
-    background: var(--court-grad-1);
+    background-color: var(--court-grad-1);
+    background-image: var(--court-pattern-light);
+    background-repeat: repeat;
     padding: 2px 12px 8px;
     flex-shrink: 0;
 }
@@ -501,9 +596,9 @@ input, select {
     justify-content: center;
 }
 
-.match-status-banner.hidden {
+.match-status-banner.banner-hidden {
     visibility: hidden;
-    display: flex !important;
+    pointer-events: none;
 }
 
 /* Scoring Area */
@@ -513,7 +608,9 @@ input, select {
     gap: 10px;
     padding: 10px 12px;
     min-height: 0;
-    background: var(--court-surface);
+    background-color: var(--court-surface);
+    background-image: var(--court-pattern);
+    background-repeat: repeat;
     padding-bottom: calc(10px + var(--safe-bottom));
     overflow-y: auto;
 }
@@ -554,13 +651,18 @@ input, select {
 
 .card-name {
     font-weight: 900;
-    font-size: 33px;
+    font-size: clamp(16px, 5vw, 28px);
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-align: center;
+    word-break: break-all;
     padding: 0 4px;
     line-height: 1.3;
+    min-height: 2.6em;
 }
 
 .card-game-score {
@@ -573,34 +675,67 @@ input, select {
 
 .card-actions {
     display: flex;
-    flex-direction: row;
-    gap: 12px;
+    flex-direction: column;
+    gap: 10px;
     width: 100%;
     margin-top: 12px;
     padding: 0 4px;
 }
 
+.card-actions-primary {
+    width: 100%;
+}
+
+.card-actions-primary .card-action {
+    width: 100%;
+    aspect-ratio: auto;
+    padding: 18px 4px;
+    font-size: 28px;
+}
+
+.card-actions-secondary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.card-actions-secondary .card-action {
+    font-size: 16px;
+    aspect-ratio: auto;
+    padding: 14px 4px;
+    line-height: 1.2;
+}
+
 .card-action {
     flex: 1;
     min-width: 0;
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     border-radius: 8px;
-    font-size: 30px;
     font-weight: 700;
     line-height: 1.3;
     border: none;
     cursor: pointer;
-    transition: transform 0.1s, opacity 0.1s;
+    transition: transform 0.1s, filter 0.1s;
     color: white;
     text-align: center;
 }
 
 .card-action:active {
-    transform: scale(0.96);
-    opacity: 0.85;
+    transform: scale(0.93);
+    filter: brightness(0.75);
+}
+
+.action-tag {
+    display: inline-block;
+    border: 1.5px solid rgba(255,255,255,0.7);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 0.65em;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
+    background: rgba(255,255,255,0.15);
 }
 
 .card-action.normal {
@@ -912,21 +1047,21 @@ input, select {
     }
 
     .card-name {
-        font-size: 36px;
+        font-size: clamp(18px, 5vw, 30px);
     }
 
     .card-game-score {
         font-size: 66px;
     }
 
-    .card-actions {
-        flex-direction: column;
+    .card-actions-primary .card-action {
+        padding: 20px 4px;
+        font-size: 30px;
     }
 
-    .card-action {
-        aspect-ratio: auto;
+    .card-actions-secondary .card-action {
         padding: 16px 4px;
-        font-size: 34px;
+        font-size: 18px;
     }
 }
 
@@ -937,13 +1072,17 @@ input, select {
     }
 
     .card-name {
-        font-size: 27px;
+        font-size: clamp(16px, 4.5vw, 24px);
     }
 
-    .card-action {
-        aspect-ratio: auto;
+    .card-actions-primary .card-action {
+        padding: 14px 4px;
+        font-size: 24px;
+    }
+
+    .card-actions-secondary .card-action {
         padding: 12px 4px;
-        font-size: 28px;
+        font-size: 16px;
     }
 }
 
@@ -958,13 +1097,17 @@ input, select {
     }
 
     .card-name {
-        font-size: 24px;
+        font-size: clamp(14px, 4vw, 20px);
     }
 
-    .card-action {
-        aspect-ratio: auto;
+    .card-actions-primary .card-action {
+        padding: 12px 4px;
+        font-size: 20px;
+    }
+
+    .card-actions-secondary .card-action {
         padding: 10px 4px;
-        font-size: 24px;
+        font-size: 14px;
     }
 }
 
@@ -978,15 +1121,25 @@ input, select {
     }
 
     .app-logo {
-        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 8px;
     }
 
     .logo-icon {
-        font-size: 32px;
+        font-size: 28px;
+        display: inline;
+        margin-bottom: 0;
     }
 
     .app-logo h1 {
-        font-size: 22px;
+        font-size: 20px;
+    }
+
+    .subtitle {
+        display: none;
     }
 
     /* Match screen background for landscape */
@@ -1014,7 +1167,7 @@ input, select {
 
     /* Scoreboard - left-aligned, compact */
     .scoreboard {
-        padding: 0 16px 6px;
+        padding: 0 16px 4px;
         padding-left: calc(12px + var(--safe-left));
         padding-right: calc(12px + var(--safe-right));
     }
@@ -1026,42 +1179,43 @@ input, select {
 
     .scoreboard th {
         font-size: 9px;
-        padding: 1px 6px;
+        padding: 1px 5px;
     }
 
     .scoreboard td {
-        font-size: 15px;
-        padding: 3px 6px;
+        font-size: 14px;
+        padding: 2px 5px;
     }
 
     .scoreboard td:first-child {
-        font-size: 13px;
-        max-width: 120px;
-        padding-right: 12px;
+        font-size: 12px;
+        max-width: 110px;
+        padding-right: 10px;
     }
 
     .scoreboard td.set-score {
-        font-size: 16px;
-        min-width: 22px;
+        font-size: 15px;
+        min-width: 20px;
     }
 
     .scoreboard td.game-score {
-        font-size: 18px;
-        min-width: 32px;
-        padding-left: 10px;
+        font-size: 17px;
+        min-width: 28px;
+        padding-left: 8px;
     }
 
     .match-status-banner {
-        padding: 4px 12px;
-        font-size: 14px;
-        min-height: 28px;
+        padding: 3px 12px;
+        font-size: 13px;
+        min-height: 24px;
     }
 
     /* Scoring area */
     .scoring-area {
-        padding: 6px 16px;
+        padding: 8px 16px;
         padding-left: calc(12px + var(--safe-left));
         padding-right: calc(12px + var(--safe-right));
+        padding-bottom: calc(8px + var(--safe-bottom));
         gap: 12px;
         flex-direction: row;
         min-height: 0;
@@ -1073,7 +1227,7 @@ input, select {
     }
 
     .card-name {
-        font-size: 24px;
+        font-size: clamp(16px, 4vw, 22px);
     }
 
     .card-game-score {
@@ -1085,13 +1239,30 @@ input, select {
     }
 
     .card-actions {
-        gap: 12px;
-        margin-top: 6px;
+        gap: 6px;
+        margin-top: 4px;
     }
 
-    .card-action {
+    .card-actions-primary .card-action {
+        aspect-ratio: auto;
+        padding: 12px 4px;
+        font-size: 20px;
+    }
+
+    .card-actions-secondary {
+        flex-direction: row;
+        gap: 6px;
+    }
+
+    .card-actions-secondary .card-action {
+        aspect-ratio: auto;
         padding: 10px 4px;
-        font-size: 26px;
+        font-size: 13px;
+    }
+
+    /* Summary screen landscape */
+    .summary-container {
+        max-width: min(90vw, 680px);
     }
 }
 
@@ -1108,23 +1279,25 @@ input, select {
     .btn-undo { padding: 2px 7px; font-size: 10px; }
 
     .scoreboard {
-        padding: 0 12px 3px;
+        padding: 0 12px 2px;
         padding-left: calc(12px + var(--safe-left));
     }
 
-    .scoreboard td { padding: 2px 5px; font-size: 14px; }
-    .scoreboard td:first-child { font-size: 12px; }
-    .scoreboard td.game-score { font-size: 16px; }
-    .scoreboard td.set-score { font-size: 14px; }
+    .scoreboard td { padding: 1px 4px; font-size: 13px; }
+    .scoreboard td:first-child { font-size: 11px; }
+    .scoreboard td.game-score { font-size: 15px; }
+    .scoreboard td.set-score { font-size: 13px; }
 
-    .scoring-area { padding: 4px 12px; gap: 10px; }
+    .scoring-area { padding: 6px 12px; padding-bottom: calc(6px + var(--safe-bottom)); gap: 10px; }
     .player-card { gap: 1px; padding: 4px 8px; }
-    .card-name { font-size: 21px; }
+    .card-name { font-size: clamp(14px, 3.5vw, 18px); }
     .card-game-score { font-size: 30px; }
-    .card-actions { gap: 12px; margin-top: 2px; }
-    .card-action { padding: 6px 3px; font-size: 22px; }
+    .card-actions { gap: 4px; margin-top: 2px; }
+    .card-actions-primary .card-action { aspect-ratio: auto; padding: 8px 3px; font-size: 16px; }
+    .card-actions-secondary { flex-direction: row; gap: 4px; }
+    .card-actions-secondary .card-action { aspect-ratio: auto; padding: 7px 3px; font-size: 11px; }
     .card-serve { font-size: 10px; }
-    .match-status-banner { padding: 2px 12px; font-size: 12px; min-height: 22px; }
+    .match-status-banner { padding: 2px 12px; font-size: 11px; min-height: 20px; }
 }
 
 /* ============================================
@@ -1138,6 +1311,16 @@ input, select {
 
 .score-flash {
     animation: scoreFlash 0.3s ease;
+}
+
+@keyframes cardFlash {
+    0% { filter: brightness(1); }
+    30% { filter: brightness(1.25); }
+    100% { filter: brightness(1); }
+}
+
+.card-flash {
+    animation: cardFlash 0.35s ease;
 }
 
 @keyframes slideUp {
